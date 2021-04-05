@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,10 +11,20 @@ namespace Microsoft.Extensions.Caching.AzureStorage
     {
         private readonly IAzureStorageProvider _provider;
 
-        public AzureStorageCache(IAzureStorageProvider provider)
+        public AzureStorageCache(IOptions<AzureStorageCacheOptions> options)
         {
-            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            if (options is null) throw new ArgumentNullException(nameof(options));
+
+            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(options.Value.ConnectionString);
+            CloudTableClient cloutTableClient = cloudStorageAccount.CreateCloudTableClient();
+            CloudTable cloudTable = cloutTableClient.GetTableReference(options.Value.TableName);
+
+            if (cloudTable.Exists() == false)
+                cloudTable.Create();
+
+            _provider = new AzureStorageProvider(cloudTable, options.Value.PartitionKey);
         }
+
 
         public byte[] Get(string key)
         {

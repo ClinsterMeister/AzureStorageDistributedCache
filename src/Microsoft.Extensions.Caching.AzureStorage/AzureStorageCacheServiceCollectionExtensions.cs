@@ -12,15 +12,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds Azure Storage distributed caching services to the specified <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="configuration">An <see cref="Func{AzureStorageCacheOptions}"/> to configure the provided
+        /// <param name="configuration">An <see cref="Action{AzureStorageCacheOptions}"/> to configure the provided
         /// <see cref="AzureStorageCacheOptions"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-        public static IServiceCollection AddAzureStorageCache(this IServiceCollection services, Func<AzureStorageCacheOptions> configuration)
+        public static IServiceCollection AddAzureStorageCache(this IServiceCollection services, Action<AzureStorageCacheOptions> configuration)
         {
             if (services is null) throw new ArgumentNullException(nameof(services));
 
-            AzureStorageCacheOptions options = configuration?.Invoke() ?? throw new ArgumentNullException(nameof(configuration));
-            services.AddSingleton<IDistributedCache>(new AzureStorageCache(InitializeAzureStorageProvider(options.ConnectionString, options.TableName, options.PartitionKey)));
+            services.AddOptions();
+            services.Configure(configuration);
+            services.AddSingleton<IDistributedCache, AzureStorageCache>();
 
             return services;
         }
@@ -36,8 +37,9 @@ namespace Microsoft.Extensions.DependencyInjection
             if (services is null) throw new ArgumentNullException(nameof(services));
             if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
-            AzureStorageCacheOptions options = configuration.GetValue<AzureStorageCacheOptions>(AzureStorageCacheOptions.AzureStorageCache);
-            services.AddSingleton<IDistributedCache>(new AzureStorageCache(InitializeAzureStorageProvider(options.ConnectionString, options.TableName, options.PartitionKey)));
+            services.AddOptions();
+            services.Configure<AzureStorageCacheOptions>(configuration.GetSection(AzureStorageCacheOptions.AzureStorageCache));
+            services.AddSingleton<IDistributedCache, AzureStorageCache>();
 
             return services;
         }
@@ -58,25 +60,16 @@ namespace Microsoft.Extensions.DependencyInjection
             string partitionKey = Environment.GetEnvironmentVariable("AZURE_STORAGE_CACHE_PARTITION_KEY")
                 ?? throw new NullReferenceException($"Missing Environment Variable 'AZURE_STORAGE_CACHE_PARTITION_KEY' which is required for {nameof(AzureStorageCache)}");
 
-            services.AddSingleton<IDistributedCache>(new AzureStorageCache(InitializeAzureStorageProvider(connectionString, tableName, partitionKey)));
+            services.AddOptions();
+            services.Configure<AzureStorageCacheOptions>(configureOptions =>
+            {
+                configureOptions.ConnectionString = connectionString;
+                configureOptions.TableName = tableName;
+                configureOptions.PartitionKey = partitionKey;
+            });
+            services.AddSingleton<IDistributedCache, AzureStorageCache>();
 
             return services;
-        }
-
-        private static AzureStorageProvider InitializeAzureStorageProvider(string connectionString, string tableName, string partitionKey)
-        {
-            if (string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentNullException(nameof(connectionString));
-            if (string.IsNullOrWhiteSpace(tableName)) throw new ArgumentNullException(nameof(tableName));
-            if (string.IsNullOrWhiteSpace(partitionKey)) throw new ArgumentNullException(nameof(partitionKey));
-
-            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
-            CloudTableClient cloutTableClient = cloudStorageAccount.CreateCloudTableClient();
-            CloudTable cloudTable = cloutTableClient.GetTableReference(tableName);
-
-            if (cloudTable.Exists() == false)
-                cloudTable.Create();
-
-            return new AzureStorageProvider(cloudTable, partitionKey);
         }
     }
 }

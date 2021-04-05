@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.Caching.AzureStorage
 {
-    public interface IAzureStorageProvider
+    internal interface IAzureStorageProvider
     {
         void InsertOrUpdateItem(string key, byte[] data, DistributedCacheEntryOptions options);
         void InsertOrUpdateItem(TableCacheEntity entity);

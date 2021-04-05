@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Extensions.Caching.AzureStorage", "src\Microsoft.Extensions.Caching.AzureStorage\Microsoft.Extensions.Caching.AzureStorage.csproj", "{60FAE992-045E-4BD6-B988-BA8E6799C687}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Caching.AzureStorage", "src\Microsoft.Extensions.Caching.AzureStorage\Microsoft.Extensions.Caching.AzureStorage.csproj", "{60FAE992-045E-4BD6-B988-BA8E6799C687}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Extensions.Caching.AzureStorage.Test", "test\Microsoft.Extensions.Caching.AzureStorage.Test\Microsoft.Extensions.Caching.AzureStorage.Test.csproj", "{898EEA6B-2938-4AD0-9C7C-E48475CA6FBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{60FAE992-045E-4BD6-B988-BA8E6799C687}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60FAE992-045E-4BD6-B988-BA8E6799C687}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60FAE992-045E-4BD6-B988-BA8E6799C687}.Release|Any CPU.Build.0 = Release|Any CPU
+		{898EEA6B-2938-4AD0-9C7C-E48475CA6FBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{898EEA6B-2938-4AD0-9C7C-E48475CA6FBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{898EEA6B-2938-4AD0-9C7C-E48475CA6FBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{898EEA6B-2938-4AD0-9C7C-E48475CA6FBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

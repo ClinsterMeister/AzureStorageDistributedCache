@@ -4,12 +4,12 @@ using System;
 
 namespace Microsoft.Extensions.Caching.AzureStorage
 {
-    public sealed class TableCacheEntity : TableEntity
+    internal sealed class TableCacheEntity : TableEntity
     {
         [Obsolete]
-        public TableCacheEntity() { }
+        internal TableCacheEntity() { }
 
-        public TableCacheEntity(string partitionKey, string rowKey, byte[] data = null, DistributedCacheEntryOptions options = null)
+        internal TableCacheEntity(string partitionKey, string rowKey, byte[] data = null, DistributedCacheEntryOptions options = null)
             : base(partitionKey, rowKey)
         {
             DateTimeOffset utcNow = DateTimeOffset.UtcNow;
